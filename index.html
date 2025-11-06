@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Tree Builder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="public/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌳 Family Tree Builder</h1>
+            <p class="subtitle">Create, share, and explore your family tree</p>
+        </header>
+
+        <!-- Create/Login Section -->
+        <div id="auth-section" class="section">
+            <div class="auth-container">
+                <div class="auth-tabs">
+                    <button class="tab-btn active" onclick="showTab('create')">Create New Tree</button>
+                    <button class="tab-btn" onclick="showTab('login')">Access Existing Tree</button>
+                </div>
+
+                <div id="create-tab" class="tab-content active">
+                    <h2>Create Your Family Tree</h2>
+                    <form id="create-tree-form">
+                        <div class="form-group">
+                            <label for="tree-name">Family Tree Name</label>
+                            <input type="text" id="tree-name" placeholder="e.g., Smith Family Tree" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="create-passcode">Set Passcode</label>
+                            <input type="password" id="create-passcode" placeholder="Enter a secure passcode" required>
+                            <small>Share this passcode with family members to grant access</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Create Family Tree</button>
+                    </form>
+                </div>
+
+                <div id="login-tab" class="tab-content">
+                    <h2>Access Family Tree</h2>
+                    <form id="login-form">
+                        <div class="form-group">
+                            <label for="tree-id">Tree ID</label>
+                            <input type="number" id="tree-id" placeholder="Enter tree ID" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="login-passcode">Passcode</label>
+                            <input type="password" id="login-passcode" placeholder="Enter passcode" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Access Tree</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main App Section (Hidden Initially) -->
+        <div id="app-section" class="section hidden">
+            <div class="app-header">
+                <div>
+                    <h2 id="current-tree-name"></h2>
+                    <span class="tree-id">Tree ID: <span id="current-tree-id"></span></span>
+                </div>
+                <button class="btn btn-secondary" onclick="resetApp()">New Tree / Logout</button>
+            </div>
+
+            <div class="app-tabs">
+                <button class="app-tab-btn active" onclick="showAppTab('members')">👥 Members</button>
+                <button class="app-tab-btn" onclick="showAppTab('tree')">🌳 Family Tree</button>
+                <button class="app-tab-btn" onclick="showAppTab('relationships')">🔗 Relationships</button>
+                <button class="app-tab-btn" onclick="showAppTab('compare')">🔍 Compare</button>
+            </div>
+
+            <!-- Members Tab -->
+            <div id="members-tab" class="app-tab-content active">
+                <div class="toolbar">
+                    <button class="btn btn-primary" onclick="showAddMemberModal()">+ Add Member</button>
+                </div>
+                <div id="members-list" class="members-grid"></div>
+            </div>
+
+            <!-- Tree Visualization Tab -->
+            <div id="tree-tab" class="app-tab-content">
+                <div class="tree-container">
+                    <div id="tree-visualization"></div>
+                </div>
+            </div>
+
+            <!-- Relationships Tab -->
+            <div id="relationships-tab" class="app-tab-content">
+                <div class="toolbar">
+                    <button class="btn btn-primary" onclick="showAddRelationshipModal()">+ Add Relationship</button>
+                </div>
+                <div id="relationships-list"></div>
+            </div>
+
+            <!-- Compare Tab -->
+            <div id="compare-tab" class="app-tab-content">
+                <h3>Find Relationship Between Two People</h3>
+                <div class="compare-form">
+                    <div class="form-group">
+                        <label for="person1-select">First Person</label>
+                        <select id="person1-select"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="person2-select">Second Person</label>
+                        <select id="person2-select"></select>
+                    </div>
+                    <button class="btn btn-primary" onclick="compareRelationship()">Find Relationship</button>
+                </div>
+                <div id="relationship-result"></div>
+            </div>
+        </div>
+
+        <!-- Modals -->
+        <!-- Add/Edit Member Modal -->
+        <div id="member-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('member-modal')">&times;</span>
+                <h2 id="member-modal-title">Add Family Member</h2>
+                <form id="member-form">
+                    <input type="hidden" id="member-id">
+                    <div class="form-group">
+                        <label for="member-name">Name *</label>
+                        <input type="text" id="member-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="member-gender">Gender</label>
+                        <select id="member-gender">
+                            <option value="">Select...</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="member-birth-date">Birth Date</label>
+                        <input type="date" id="member-birth-date">
+                    </div>
+                    <div class="form-group">
+                        <label for="member-death-date">Death Date</label>
+                        <input type="date" id="member-death-date">
+                    </div>
+                    <div class="form-group">
+                        <label for="member-notes">Notes</label>
+                        <textarea id="member-notes" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="member-photo">Photo URL</label>
+                        <input type="url" id="member-photo" placeholder="https://...">
+                    </div>
+                    <div class="modal-actions">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('member-modal')">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Add Relationship Modal -->
+        <div id="relationship-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('relationship-modal')">&times;</span>
+                <h2>Add Relationship</h2>
+                <form id="relationship-form">
+                    <div class="form-group">
+                        <label for="rel-person1">Person 1</label>
+                        <select id="rel-person1" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="rel-type">Relationship Type</label>
+                        <select id="rel-type" required>
+                            <option value="">Select...</option>
+                            <option value="parent">Parent</option>
+                            <option value="child">Child</option>
+                            <option value="spouse">Spouse</option>
+                            <option value="sibling">Sibling</option>
+                        </select>
+                        <small>Person 1 is the [relationship type] of Person 2</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="rel-person2">Person 2</label>
+                        <select id="rel-person2" required></select>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="submit" class="btn btn-primary">Add Relationship</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('relationship-modal')">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="public/app.js"></script>
+</body>
+</html>
+

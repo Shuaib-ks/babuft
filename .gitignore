@@ -1,0 +1,7 @@
+node_modules/
+family_tree.db
+family_tree.db-journal
+.DS_Store
+*.log
+.env
+
